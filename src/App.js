@@ -1,26 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react'
+import { v4 } from 'uuid'
+import { Table } from './components/table/table'
+import './App.css'
+
+const text = ['🥥', '💩', '👌']
+
+const item = () => ({
+  id: v4(),
+  date: new Date(),
+  amount: Math.floor(Math.random() * 1000) + 1,
+  description: text[Math.floor(Math.random() * text.length)]
+})
+
+const createItems = amount => {
+  const array = []
+  for (let i = 0; i < amount; i++) array.push(item())
+  return array
+}
+
+const items = [...createItems(6000)]
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Table items={items} />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
