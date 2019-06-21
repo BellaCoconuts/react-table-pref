@@ -1,8 +1,6 @@
 import React from 'react'
 import { v4 } from 'uuid'
 import { Table } from './components/table/table'
-import './App.css'
-
 const text = ['🥥', '💩', '👌']
 
 const item = () => ({
