@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import moment from 'moment'
-import { Button } from '@material-ui/core'
+import { List, ListItem, Button } from '@material-ui/core'
 
 export const Table = React.memo(({ items }) => {
   const [sortDir, setSortDir] = useState('')
@@ -18,12 +18,15 @@ export const Table = React.memo(({ items }) => {
   const ascendingOrder = (a, b) => (a > b ? 1 : b > a ? -1 : 0)
   const descendingOrder = (a, b) => (a > b ? -1 : b > a ? 1 : 0)
 
-  const sortedItems = () =>
-    items.sort((a, b) =>
-      sortDir === 'asc'
-        ? ascendingOrder(a[currentSort], b[currentSort])
-        : descendingOrder(a[currentSort], b[currentSort])
-    )
+  const sortedItems = React.useMemo(
+    () =>
+      items.sort((a, b) =>
+        sortDir === 'asc'
+          ? ascendingOrder(a[currentSort], b[currentSort])
+          : descendingOrder(a[currentSort], b[currentSort])
+      ),
+    [currentSort, items, sortDir]
+  )
 
   return (
     <>
@@ -64,23 +67,23 @@ export const Table = React.memo(({ items }) => {
           onClick={handleClick}
         />
       </div>
-      <div>
-        {sortedItems().map(item => (
+      <List>
+        {sortedItems.map(item => (
           <Row key={item.id} item={item} />
         ))}
-      </div>
+      </List>
     </>
   )
 })
 
 const Row = React.memo(({ item }) => (
-  <div style={{ display: 'block' }}>
+  <ListItem button>
     <DateRow date={item.date} />
     {' - '} <CurrencyRow currency={item.amount} />
     {' - '} <TableRow text={item.description} />
     {' - '} <CurrencyRow currency={item.balance} />
     {' - '} <CurrencyRow currency={item.currency} />
-  </div>
+  </ListItem>
 ))
 
 const TableHeader = React.memo(
