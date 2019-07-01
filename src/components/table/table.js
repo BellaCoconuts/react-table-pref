@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import moment from 'moment'
+import { Button } from '@material-ui/core'
 
 export const Table = React.memo(({ items }) => {
-  const itemsRef = React.useRef(items)
-  const [sortDir, setSortDir] = useState('desc')
-  const [currentSort, setCurrentSort] = useState('date')
+  const [sortDir, setSortDir] = useState('')
+  const [currentSort, setCurrentSort] = useState('')
 
   const handleClick = id => {
     if (currentSort !== id) {
@@ -15,16 +15,15 @@ export const Table = React.memo(({ items }) => {
     setSortDir(sortDir === 'asc' ? 'desc' : 'asc')
   }
 
-  React.useEffect(() => {
-    const ascending = (a, b) => (a[currentSort] > b[currentSort] ? -1 : 1)
-    const descending = (a, b) => (a[currentSort] < b[currentSort] ? -1 : 1)
-    const sortedItems = () => {
-      return items.sort((a, b) =>
-        sortDir === 'asc' ? ascending(a, b) : descending(a, b)
-      )
-    }
-    itemsRef.current = sortedItems()
-  }, [currentSort, items, setCurrentSort, sortDir])
+  const ascendingOrder = (a, b) => (a > b ? 1 : b > a ? -1 : 0)
+  const descendingOrder = (a, b) => (a > b ? -1 : b > a ? 1 : 0)
+
+  const sortedItems = () =>
+    items.sort((a, b) =>
+      sortDir === 'asc'
+        ? ascendingOrder(a[currentSort], b[currentSort])
+        : descendingOrder(a[currentSort], b[currentSort])
+    )
 
   return (
     <>
@@ -50,27 +49,46 @@ export const Table = React.memo(({ items }) => {
           headerId="description"
           onClick={handleClick}
         />
+        <TableHeader
+          currentSort={currentSort}
+          sortDir={sortDir}
+          headerText="Balance"
+          headerId="balance"
+          onClick={handleClick}
+        />
+        <TableHeader
+          currentSort={currentSort}
+          sortDir={sortDir}
+          headerText="Currency"
+          headerId="currency"
+          onClick={handleClick}
+        />
       </div>
       <div>
-        {itemsRef.current.map(item => (
-          <div style={{ display: 'block' }} key={item.id}>
-            <DateRow date={item.date} />
-            {' - '}
-            <CurrencyRow currency={item.amount} />
-            {' - '} <TableRow text={item.description} />
-          </div>
+        {sortedItems().map(item => (
+          <Row key={item.id} item={item} />
         ))}
       </div>
     </>
   )
 })
 
+const Row = React.memo(({ item }) => (
+  <div style={{ display: 'block' }}>
+    <DateRow date={item.date} />
+    {' - '} <CurrencyRow currency={item.amount} />
+    {' - '} <TableRow text={item.description} />
+    {' - '} <CurrencyRow currency={item.balance} />
+    {' - '} <CurrencyRow currency={item.currency} />
+  </div>
+))
+
 const TableHeader = React.memo(
   ({ headerId, headerText, currentSort, sortDir, onClick }) => {
     const isCurrentSort = currentSort === headerId
 
     const sort = !isCurrentSort
-      ? ' ||'
+      ? ''
       : sortDir === 'asc'
       ? ' ^'
       : sortDir === 'desc'
@@ -80,10 +98,15 @@ const TableHeader = React.memo(
     const handleClick = () => onClick(headerId)
 
     return (
-      <div onClick={handleClick} style={{ fontWeight: 'bolder' }}>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleClick}
+        style={{ fontWeight: 'bolder' }}
+      >
         {headerText}
         {sort}
-      </div>
+      </Button>
     )
   }
 )

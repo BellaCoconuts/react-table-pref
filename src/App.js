@@ -7,7 +7,9 @@ const item = () => ({
   id: v4(),
   date: new Date(),
   amount: Math.floor(Math.random() * 1000) + 1,
-  description: text[Math.floor(Math.random() * text.length)]
+  description: text[Math.floor(Math.random() * text.length)],
+  balance: Math.floor(Math.random() * 1000) + 1,
+  currency: Math.floor(Math.random() * 1000) + 1
 })
 
 const createItems = amount => {
@@ -16,7 +18,7 @@ const createItems = amount => {
   return array
 }
 
-const items = [...createItems(6000)]
+const items = [...createItems(2600)]
 
 function App() {
   return (
